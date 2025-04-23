@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-// Dữ liệu mẫu
+// Dữ liệu mẫu ban đầu
 const initialStudents = [
   { id: 1, name: "Nguyen Van A", class: "CNTT1", age: 20 },
   { id: 2, name: "Tran Thi B", class: "CNTT2", age: 21 },
@@ -8,7 +8,11 @@ const initialStudents = [
 ];
 
 function App() {
-  const [students, setStudents] = useState(initialStudents);
+  // Khởi tạo danh sách sinh viên từ localStorage hoặc sử dụng dữ liệu mẫu
+  const [students, setStudents] = useState(() => {
+    const savedStudents = localStorage.getItem('students');
+    return savedStudents ? JSON.parse(savedStudents) : initialStudents;
+  });
   const [formData, setFormData] = useState({
     name: "",
     class: "",
@@ -23,7 +27,12 @@ function App() {
     age: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedClass, setSelectedClass] = useState(""); // Trạng thái cho lớp được chọn
+  const [selectedClass, setSelectedClass] = useState("");
+
+  // Lưu danh sách sinh viên vào localStorage mỗi khi danh sách thay đổi
+  useEffect(() => {
+    localStorage.setItem('students', JSON.stringify(students));
+  }, [students]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
