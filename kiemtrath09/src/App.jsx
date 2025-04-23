@@ -22,7 +22,8 @@ function App() {
     class: "",
     age: "",
   });
-  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái cho tìm kiếm
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedClass, setSelectedClass] = useState(""); // Trạng thái cho lớp được chọn
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -98,9 +99,13 @@ function App() {
     setCurrentStudent(null);
   };
 
-  // Lọc sinh viên theo tên
+  // Lấy danh sách các lớp duy nhất từ dữ liệu sinh viên
+  const uniqueClasses = [...new Set(students.map((student) => student.class))];
+
+  // Lọc sinh viên theo tên và lớp
   const filteredStudents = students.filter((student) =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase())
+    student.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (selectedClass === "" || student.class === selectedClass)
   );
 
   return (
@@ -144,15 +149,27 @@ function App() {
         </button>
       </div>
 
-      {/* Thanh tìm kiếm */}
-      <div className="mb-6">
+      {/* Thanh tìm kiếm và lọc theo lớp */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Tìm kiếm theo tên..."
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
+        <select
+          value={selectedClass}
+          onChange={(e) => setSelectedClass(e.target.value)}
+          className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+        >
+          <option value="">Tất cả các lớp</option>
+          {uniqueClasses.map((className) => (
+            <option key={className} value={className}>
+              {className}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Thông báo thành công */}
