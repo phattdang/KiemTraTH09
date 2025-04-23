@@ -22,13 +22,11 @@ function App() {
   };
 
   const handleAddStudent = () => {
-    // Kiểm tra nếu các trường không rỗng
     if (!formData.name || !formData.class || !formData.age) {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    // Tạo sinh viên mới
     const newStudent = {
       id: students.length + 1,
       name: formData.name,
@@ -36,18 +34,22 @@ function App() {
       age: parseInt(formData.age),
     };
 
-    // Thêm sinh viên mới vào danh sách
     setStudents([...students, newStudent]);
-
-    // Hiển thị thông báo thành công
     setSuccessMessage("Thêm thành công!");
-    console.log("Success message set:", "Thêm thành công!"); // Kiểm tra
     setTimeout(() => {
       setSuccessMessage("");
     }, 3000);
-
-    // Reset form sau khi thêm
     setFormData({ name: "", class: "", age: "" });
+  };
+
+  const handleDeleteStudent = (id) => {
+    // Lọc bỏ sinh viên có id tương ứng
+    const updatedStudents = students.filter((student) => student.id !== id);
+    setStudents(updatedStudents);
+    setSuccessMessage("Xoá thành công!");
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 3000);
   };
 
   return (
@@ -116,7 +118,10 @@ function App() {
                 <td className="px-4 py-3">{student.class}</td>
                 <td className="px-4 py-3">{student.age}</td>
                 <td className="px-4 py-3">
-                  <button className="text-red-600 hover:text-red-800 bg-transparent border-none p-0">
+                  <button
+                    onClick={() => handleDeleteStudent(student.id)}
+                    className="text-red-600 hover:text-red-800 bg-transparent border-none p-0"
+                  >
                     Xoá
                   </button>
                 </td>
