@@ -15,6 +15,13 @@ function App() {
     age: "",
   });
   const [successMessage, setSuccessMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentStudent, setCurrentStudent] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    class: "",
+    age: "",
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,13 +50,51 @@ function App() {
   };
 
   const handleDeleteStudent = (id) => {
-    // Lọc bỏ sinh viên có id tương ứng
     const updatedStudents = students.filter((student) => student.id !== id);
     setStudents(updatedStudents);
     setSuccessMessage("Xoá thành công!");
     setTimeout(() => {
       setSuccessMessage("");
     }, 3000);
+  };
+
+  const handleEditStudent = (student) => {
+    setCurrentStudent(student);
+    setEditFormData({
+      name: student.name,
+      class: student.class,
+      age: student.age,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveEdit = () => {
+    if (!editFormData.name || !editFormData.class || !editFormData.age) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    const updatedStudents = students.map((student) =>
+      student.id === currentStudent.id
+        ? { ...student, ...editFormData, age: parseInt(editFormData.age) }
+        : student
+    );
+    setStudents(updatedStudents);
+    setSuccessMessage("Sửa thành công!");
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 3000);
+    setIsModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setCurrentStudent(null);
   };
 
   return (
@@ -117,7 +162,13 @@ function App() {
                 <td className="px-4 py-3">{student.name}</td>
                 <td className="px-4 py-3">{student.class}</td>
                 <td className="px-4 py-3">{student.age}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 space-x-2">
+                  <button
+                    onClick={() => handleEditStudent(student)}
+                    className="text-blue-600 hover:text-blue-800 bg-transparent border-none p-0"
+                  >
+                    Sửa
+                  </button>
                   <button
                     onClick={() => handleDeleteStudent(student.id)}
                     className="text-red-600 hover:text-red-800 bg-transparent border-none p-0"
@@ -130,6 +181,55 @@ function App() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal chỉnh sửa */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Chỉnh sửa thông tin sinh viên</h2>
+            <div className="grid grid-cols-1 gap-4 mb-4">
+              <input
+                type="text"
+                name="name"
+                value={editFormData.name}
+                onChange={handleEditInputChange}
+                placeholder="Họ tên"
+                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+              <input
+                type="text"
+                name="class"
+                value={editFormData.class}
+                onChange={handleEditInputChange}
+                placeholder="Lớp"
+                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+              <input
+                type="number"
+                name="age"
+                value={editFormData.age}
+                onChange={handleEditInputChange}
+                placeholder="Tuổi"
+                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={handleCloseModal}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-gray-800"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
