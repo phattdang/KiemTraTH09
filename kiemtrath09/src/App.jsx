@@ -22,6 +22,7 @@ function App() {
     class: "",
     age: "",
   });
+  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái cho tìm kiếm
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,6 +98,11 @@ function App() {
     setCurrentStudent(null);
   };
 
+  // Lọc sinh viên theo tên
+  const filteredStudents = students.filter((student) =>
+    student.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Quản lý danh sách sinh viên</h1>
@@ -138,6 +144,17 @@ function App() {
         </button>
       </div>
 
+      {/* Thanh tìm kiếm */}
+      <div className="mb-6">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Tìm kiếm theo tên..."
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+        />
+      </div>
+
       {/* Thông báo thành công */}
       {successMessage && (
         <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg text-sm shadow z-10">
@@ -157,7 +174,7 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {students.map((student) => (
+            {filteredStudents.map((student) => (
               <tr key={student.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3">{student.name}</td>
                 <td className="px-4 py-3">{student.class}</td>
