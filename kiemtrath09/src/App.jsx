@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import StudentItem from './components/StudentItem';
 
 // Dữ liệu mẫu ban đầu
 const initialStudents = [
@@ -8,7 +9,6 @@ const initialStudents = [
 ];
 
 function App() {
-  // Khởi tạo danh sách sinh viên từ localStorage hoặc sử dụng dữ liệu mẫu
   const [students, setStudents] = useState(() => {
     const savedStudents = localStorage.getItem('students');
     return savedStudents ? JSON.parse(savedStudents) : initialStudents;
@@ -29,7 +29,6 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
 
-  // Lưu danh sách sinh viên vào localStorage mỗi khi danh sách thay đổi
   useEffect(() => {
     localStorage.setItem('students', JSON.stringify(students));
   }, [students]);
@@ -108,10 +107,8 @@ function App() {
     setCurrentStudent(null);
   };
 
-  // Lấy danh sách các lớp duy nhất từ dữ liệu sinh viên
   const uniqueClasses = [...new Set(students.map((student) => student.class))];
 
-  // Lọc sinh viên theo tên và lớp
   const filteredStudents = students.filter((student) =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (selectedClass === "" || student.class === selectedClass)
@@ -201,25 +198,12 @@ function App() {
           </thead>
           <tbody>
             {filteredStudents.map((student) => (
-              <tr key={student.id} className="border-t hover:bg-gray-50">
-                <td className="px-4 py-3">{student.name}</td>
-                <td className="px-4 py-3">{student.class}</td>
-                <td className="px-4 py-3">{student.age}</td>
-                <td className="px-4 py-3 space-x-2">
-                  <button
-                    onClick={() => handleEditStudent(student)}
-                    className="text-blue-600 hover:text-blue-800 bg-transparent border-none p-0"
-                  >
-                    Sửa
-                  </button>
-                  <button
-                    onClick={() => handleDeleteStudent(student.id)}
-                    className="text-red-600 hover:text-red-800 bg-transparent border-none p-0"
-                  >
-                    Xoá
-                  </button>
-                </td>
-              </tr>
+              <StudentItem
+                key={student.id}
+                student={student}
+                onEdit={handleEditStudent}
+                onDelete={handleDeleteStudent}
+              />
             ))}
           </tbody>
         </table>
